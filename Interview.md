@@ -161,3 +161,107 @@ APT28 (Fancy Bear) is a Russian state-sponsored threat group targeting NATO-rela
 
 All four components work best when combined for layered threat intelligence and defense.
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 🛰️ OSINT Tools for Threat Intelligence Gathering
+
+Open-Source Intelligence (OSINT) tools are critical for gathering external threat data, enriching IOCs, profiling adversaries, and monitoring cyber threat landscapes. Below is a categorized list of high-utility OSINT tools used by CTI analysts.
+
+---
+
+## 🌐 Domain, DNS, and WHOIS Investigation
+
+| Tool             | Use Case                                      |
+|------------------|-----------------------------------------------|
+| **WhoisXML API / WhoisLookup** | Domain registration and ownership metadata       |
+| **SecurityTrails**     | Domain history, DNS data, subdomains             |
+| **VirusTotal Passive DNS** | Historical DNS records, resolutions              |
+| **ViewDNS.info**       | Multi-function DNS, ASN, reverse tools            |
+| **CRT.sh**             | Certificate transparency logs for subdomain discovery |
+
+---
+
+## 🔎 IP and Infrastructure Intelligence
+
+| Tool              | Use Case                                      |
+|-------------------|-----------------------------------------------|
+| **Shodan**             | Internet-exposed services, banners, and device metadata |
+| **Censys**             | Similar to Shodan; enriched with certificate analysis   |
+| **Greynoise**          | Internet noise vs targeted attack distinction           |
+| **AbuseIPDB**          | Crowdsourced malicious IP reputation tracking           |
+| **IPinfo.io / MaxMind**| GeoIP, ASN, and network ownership lookup                |
+
+---
+
+## 🦠 Malware & File Intelligence
+
+| Tool               | Use Case                                      |
+|--------------------|-----------------------------------------------|
+| **VirusTotal**         | File, URL, domain reputation, sandbox detonation |
+| **Hybrid Analysis**    | Deep static/dynamic malware analysis             |
+| **Joe Sandbox**        | Advanced malware sandbox with MITRE mapping      |
+| **MalShare**           | Community-contributed malware samples             |
+| **Any.Run (Community)**| Interactive malware analysis                      |
+
+---
+
+## 👤 Threat Actor Profiling
+
+| Tool              | Use Case                                      |
+|-------------------|-----------------------------------------------|
+| **Malpedia**          | Malware family + actor attribution            |
+| **APTNotes / APTWiki**| Community-collected APT group reports         |
+| **MITRE ATT&CK**      | Mapping TTPs to threat groups                 |
+| **ThreatFox**         | Real-time malware IOC feeds from abuse.ch    |
+
+---
+
+## 📲 Social Media & Dark Web Monitoring
+
+| Tool               | Use Case                                      |
+|--------------------|-----------------------------------------------|
+| **IntelX**             | Breach data, dark web content, paste sites      |
+| **DeHashed**           | Email, password, and breach search             |
+| **Recon-ng**           | Modular recon tool for profiling via social platforms |
+| **SpiderFoot HX**      | Automated OSINT + dark web correlation          |
+
+---
+
+## 🛠️ Automation and Aggregation Tools
+
+| Tool              | Use Case                                      |
+|-------------------|-----------------------------------------------|
+| **TheHarvester**      | Email, domain, and IP OSINT gathering        |
+| **Amass**             | Subdomain enumeration and mapping            |
+| **OSINT Framework**   | Web-based directory of categorized OSINT tools |
+| **OpenCTI**           | Threat intel platform for correlation        |
+| **MISP**              | Sharing and managing threat intelligence     |
+
+---
+
+## ⚡ Example Workflow (for IOC enrichment)
+
+1. **Input IOC**: Malicious domain  
+2. **Run Tools**:
+   - `VirusTotal` – check reputation, relations  
+   - `SecurityTrails` – domain history, subdomains  
+   - `WhoisXML` – registrar, creation date, email  
+   - `Shodan/Censys` – see hosting infrastructure  
+3. **Correlate with Threat Actors** using:
+   - `MITRE ATT&CK`  
+   - `Malpedia`  
+   - `ThreatFox`
+
+---
+
+## 🧠 Analyst Tip
+
+- Validate tool results across multiple sources.
+- Use APIs + automation for bulk IOC enrichment.
+- Leverage MISP or OpenCTI for storing, correlating, and tagging collected intel.
+
+---
+
+> OSINT is only as powerful as the analyst using it—combine tools, context, and critical thinking for actionable intelligence.
+
+
