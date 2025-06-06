@@ -767,5 +767,120 @@ Attributing a cyberattack to a specific threat actor involves a systematic proce
 
 > Accurate attribution is a multi-dimensional process combining technical, behavioral, and contextual intelligence — crucial for informed strategic cybersecurity decisions.
 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+# 🧠 Common APT Groups and Their Distinct TTPs
+
+Advanced Persistent Threat (APT) groups are nation-state or state-sponsored actors known for long-term, targeted cyber operations. Each APT exhibits unique **Tactics, Techniques, and Procedures (TTPs)** based on their goals, regions of interest, and operational doctrine.
+
+---
+
+## 🐻 APT29 (aka Cozy Bear, Nobelium)
+
+- **Nation-State**: Russia (SVR – Foreign Intelligence Service)
+- **Target Sectors**: Government, think tanks, energy, healthcare
+- **Notable Operations**: SolarWinds (2020), COVID-19 vaccine espionage
+
+### Key TTPs:
+| MITRE ATT&CK Tactic | Techniques Used                          |
+|----------------------|------------------------------------------|
+| Initial Access       | Spear phishing, supply chain compromise |
+| Defense Evasion      | DLL side-loading, encrypted channels     |
+| Persistence          | Registry run keys, scheduled tasks      |
+| C2                   | Steganography, legitimate cloud services|
+| Exfiltration         | HTTPS to legitimate-looking domains     |
+
+---
+
+## 🐉 APT41 (aka Barium, Winnti, Double Dragon)
+
+- **Nation-State**: China (linked to both espionage and financially motivated ops)
+- **Target Sectors**: Healthcare, telecom, gaming, finance
+- **Notable Operations**: Citrix, Equifax, software supply chains
+
+### Key TTPs:
+| MITRE ATT&CK Tactic | Techniques Used                              |
+|----------------------|----------------------------------------------|
+| Initial Access       | Exploiting internet-facing apps (e.g., Citrix), spear phishing |
+| Credential Access    | Mimikatz, keylogging                         |
+| Lateral Movement     | PsExec, stolen credentials                   |
+| Command and Control  | Use of Cobalt Strike, custom backdoors       |
+| Dual Purpose         | Cyber espionage + financial theft (e.g., crypto mining) |
+
+---
+
+## 🐼 APT10 (aka Stone Panda, MenuPass)
+
+- **Nation-State**: China
+- **Target Sectors**: IT managed service providers (MSPs), aerospace, defense
+- **Notable Operations**: Cloud Hopper campaign
+
+### Key TTPs:
+| MITRE ATT&CK Tactic | Techniques Used                          |
+|----------------------|------------------------------------------|
+| Initial Access       | Compromise of MSPs to access clients    |
+| Collection           | Extensive data staging and archiving     |
+| C2                   | HTTPS with custom domains                |
+| Persistence          | Web shells, service registry modifications |
+
+---
+
+## 🇰🇵 APT37 (aka Reaper, ScarCruft)
+
+- **Nation-State**: North Korea
+- **Target Sectors**: Government, journalists, defectors
+- **Notable Operations**: Operation Daybreak, mobile spyware
+
+### Key TTPs:
+| MITRE ATT&CK Tactic | Techniques Used                       |
+|----------------------|----------------------------------------|
+| Initial Access       | Exploit kits, spear phishing           |
+| Mobile Malware       | Custom Android spyware                 |
+| Info Collection      | Keylogging, screenshot capture         |
+| Lateral Movement     | Use of open shares, RDP brute force    |
+
+---
+
+## ☠️ Lazarus Group (APT38 subset)
+
+- **Nation-State**: North Korea
+- **Target Sectors**: Banking, cryptocurrency, defense
+- **Notable Operations**: SWIFT attacks, Sony breach, WannaCry
+
+### Key TTPs:
+| MITRE ATT&CK Tactic | Techniques Used                            |
+|----------------------|--------------------------------------------|
+| Initial Access       | Weaponized documents, fake job lures       |
+| Credential Dumping   | LSASS access, pass-the-hash                |
+| Exfiltration         | Custom tunneling tools                     |
+| Destruction          | Wiper malware (e.g., HermeticWiper, WannaCry) |
+
+---
+
+## Comparison Table
+
+| APT Group | Origin   | Focus                         | Distinct TTPs                                 |
+|-----------|----------|-------------------------------|-----------------------------------------------|
+| APT29     | Russia   | Espionage, stealth            | Supply chain, encrypted C2, stego             |
+| APT41     | China    | Dual-use (espionage + profit) | Exploits + Cobalt Strike, backdoors           |
+| APT10     | China    | Supply chain, MSP abuse       | Cloud Hopper campaign, extensive staging      |
+| APT37     | N. Korea | Regional espionage            | Mobile malware, defector tracking             |
+| Lazarus   | N. Korea | Financial crime + sabotage    | Crypto theft, ransomware, destructive attacks |
+
+---
+
+## 🔍 MITRE ATT&CK Navigator Mapping (Simplified)
+
+Each APT maps heavily to the MITRE ATT&CK framework. Use Navigator to visualize overlap and divergence of techniques.
+
+Example:  
+- APT29 focuses on **Defense Evasion** (T1027, T1036)
+- APT41 emphasizes **Initial Access** via **Exploitation for Public-Facing Application** (T1190)
+- Lazarus leverages **Data Encrypted for Impact** (T1486) and **Wiper Malware** (T1485)
+
+---
+
+> Understanding APT groups and their unique TTP signatures allows defenders to build tailored detection, attribution, and mitigation strategies.
+
 
 
