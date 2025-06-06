@@ -1,176 +1,150 @@
-# Cyber Threat Intelligence (CTI) Interview Preparation Guide
+# Advanced Guide to Cyber Threat Groups: Deep Dive into Attribution, Tracking, and Analysis
+
+## 1. In-Depth Threat Group Naming Conventions
+
+### A. MITRE ATT&CK & Government Designations
+- **APT + Number (e.g., APT29, APT41)**  
+  - Used by MITRE, Mandiant, and US government agencies  
+  - Numbers assigned sequentially but may imply relationships  
+  - Some numbers retired (e.g., APT1 was Chinese PLA unit indicted in 2014)  
+
+- **FIN + Number (e.g., FIN7, FIN8)**  
+  - Used for financially motivated cybercriminal groups  
+  - FIN7 (aka Carbanak) targets POS systems and banks  
+
+- **UNC + Number (e.g., UNC2452, UNC1878)**  
+  - Mandiant's "Uncategorized" designation before full attribution  
+  - Later may be renamed (e.g., UNC2452 → APT29 after SolarWinds)  
+
+### B. Vendor-Specific Naming Schemes
+
+| Vendor         | Naming Style          | Example                | Meaning                          |
+|----------------|-----------------------|------------------------|----------------------------------|
+| CrowdStrike    | Animals + Bear/Panda  | "Cozy Bear" (APT29)    | Russian-affiliated APT group     |
+| FireEye        | APT + Number + Country| APT34 (Iranian)        | Iranian OilRig group             |
+| Microsoft      | Weather + Elements    | "Storm-0558" (China)   | Chinese cloud espionage group    |
+| Kaspersky      | Animal + Activity     | "Gamaredon" (Ukraine)  | Russian-aligned targeting Ukraine|
+| ESET           | Famous Hackers/Myths  | "Lazarus" (North Korea)| North Korean state-sponsored group |
+
+### C. Self-Declared & Community Names
+- **"Lazarus Group"** – North Korean hackers  
+- **"Fancy Bear"** – Russian GRU-linked APT28  
+- **"Equation Group"** – Alleged NSA-linked hackers  
 
 ---
 
-## 1. Fundamentals of CTI
+## 2. Advanced Attribution Techniques
 
-### ❓ What is Cyber Threat Intelligence (CTI), and how does it differ from traditional threat data?
-- CTI is analyzed, contextual threat information used to prevent or respond to cyber threats.
-- Traditional threat data is raw (e.g., IPs, hashes), while CTI is actionable, enriched, and aligned to organizational needs.
+### A. Technical Attribution
+1. **Malware Code Similarities**  
+   - Example: **Duqu 2.0** linked to Stuxnet via kernel exploits  
 
-### 🔄 Explain the intelligence lifecycle:
-1. **Planning & Direction** – Define intelligence needs.
-2. **Collection** – Gather data from various sources.
-3. **Processing** – Clean, normalize, and format data.
-4. **Analysis** – Extract meaning and assess impact.
-5. **Dissemination** – Share with relevant stakeholders.
-6. **Feedback** – Refine future cycles based on input.
+2. **Command & Control (C2) Infrastructure**  
+   - Example: **APT29** reused VPS providers  
 
-### 🧠 What are the three levels of threat intelligence?
+3. **Timestamps & Operational Hours**  
+   - Example: **APT10** malware compiled during Chinese work hours  
 
-| Level       | Description                                           | Example                                                  |
-|-------------|-------------------------------------------------------|----------------------------------------------------------|
-| Strategic   | High-level, long-term threat insights                 | Geopolitical risk reports for executive decisions        |
-| Operational | Campaign, actor, or sector-level threat activity      | Ransomware trend targeting financial services            |
-| Tactical    | Technical details to support defense teams            | IOC feeds, malware hashes, YARA/Sigma rules              |
+### B. Human & Linguistic Attribution
+1. **Language Mistakes in Malware**  
+   - Chinese: Pinyin typos ("admin" → "adimn")  
+   - Russian: Cyrillic keyboard slips ("secure" → "сесure")  
 
-### 🧩 How do you differentiate between:
-- **Threat Actors** – Individuals or groups (e.g., APT29)
-- **TTPs** – Tactics, Techniques, Procedures (e.g., MITRE ATT&CK)
-- **IOCs** – Artifacts like IPs, hashes, domains
-- **IOAs** – Behavioral patterns suggesting an attack (e.g., suspicious PowerShell use)
+2. **Forum & Underground Chat Activity**  
+   - Russian: **Exploit.in**, **XSS**  
+   - Chinese: **QQ groups**, **WeChat**  
 
----
+3. **Cryptocurrency Tracking**  
+   - Lazarus Group money laundering patterns  
 
-## 2. Threat Intelligence Collection & Sources
+### C. Political & Strategic Attribution
+- **Targeting Patterns**  
+  - Russia: NATO & Ukraine  
+  - China: US tech firms  
+  - Iran: Middle Eastern governments  
 
-### 🛠 What are some OSINT tools for threat intelligence?
-- Shodan, VirusTotal, Censys, URLscan, Maltego, SpiderFoot, PassiveTotal, GitHub, Reddit, Twitter
-
-### 📦 How do you collect and validate IOCs?
-- Collected via sensors, logs, feeds.
-- Validated using sandboxing, manual analysis, frequency correlation, context scoring.
-
-### 🔐 What are some closed/private sources?
-- ISACs (FS-ISAC, MS-ISAC), threat intel vendors (Recorded Future, Intel 471), private threat-sharing groups, paid dark web monitoring.
-
-### 🕵️‍♂️ How would you monitor dark web forums?
-- Use threat intel vendors/tools or Tor access + scrapers.
-- Track keywords, actor handles, and leak dumps.
-- Leverage HUMINT or automated crawlers.
+- **Geopolitical Timing**  
+  - Russian election interference  
+  - Chinese cyber-espionage before trade talks  
 
 ---
 
-## 3. Threat Analysis & Attribution
+## 3. Deep Dive into Tracking Methodologies
 
-### 🧪 How would you analyze malware for threat intel?
-- Static + dynamic analysis (e.g., Ghidra, Cuckoo Sandbox)
-- Extract IOCs, behavior, C2s, techniques
-- Compare against known families/campaigns
+### A. Malware Family Tracking
 
-### 🎯 How do you attribute attacks to actors?
-- Analyze infrastructure reuse, malware variants, TTP alignment (MITRE), language/metadata, historical data
+| Malware         | Threat Group    | Purpose                  | Key Features                     |
+|-----------------|-----------------|--------------------------|----------------------------------|
+| TrickBot        | FIN7, Conti     | Banking → Ransomware     | Modular plugins, C2 encryption   |
+| Cobalt Strike   | Multiple APTs   | Post-Exploitation        | Beaconing, lateral movement      |
+| Ryuk            | Wizard Spider   | Ransomware               | Big-game hunting                 |
+| Poison Ivy      | APT10 (China)   | RAT                      | Custom C2 protocols              |
 
-### 🧨 Common APT groups and differences:
-- **APT29 (Cozy Bear):** Stealthy, phishing + malware, targets gov.
-- **APT41:** Chinese nexus, blends cybercrime and espionage, supply-chain attacks
+### B. Infrastructure Tracking
+1. **Passive DNS (pDNS) Analysis**  
+   - Example: APT35 (Iran) reused domains  
 
-### 📋 How to assess threat report credibility?
-- Source reliability, corroboration, methodology transparency, date relevance, motive of source
+2. **SSL Certificate Fingerprinting**  
+   - Example: APT29's Let's Encrypt patterns  
 
----
+3. **Bulletproof Hosting**  
+   - Example: APT29 using AS40989 (M247)  
 
-## 4. Threat Intelligence Sharing & Reporting
+### C. Behavioral Analysis (TTPs)
+- **Initial Access**  
+  - APT29: OAuth token theft (SolarWinds)  
+  - Lazarus: Fake job offers  
 
-### 🧾 How to structure intel reports:
-- **Executives:** High-level impact, risk summary, trends
-- **SOC Analysts:** IOC list, detection logic, TTP mapping, log queries
+- **Lateral Movement**  
+  - APT28: EternalBlue exploits  
 
-### 🔄 Standard formats:
-- **STIX/TAXII:** Structured sharing protocols
-- **MISP:** Community-based platform for sharing and enrichment
-
-### 🛡 How to ensure actionability?
-- Include IOC validity, detection mechanisms (YARA, Sigma), recommended mitigations
-
-### ⚠️ Sharing challenges:
-- Legal/regulatory constraints, trust issues, data classification, vendor lock-in, info overload
+- **Exfiltration**  
+  - APT41: Mega.nz cloud storage  
 
 ---
 
-## 5. CTI Tools & Technologies
+## 4. Case Studies: Major Threat Group Exposures
 
-### 🔍 SIEM, TIPs, and threat feeds used:
-- **SIEMs:** Splunk, QRadar, Sentinel
-- **TIPs:** MISP, ThreatConnect, Anomali
-- **Feeds:** AlienVault OTX, Abuse.ch, MalwareBazaar, Intel 471
+### A. APT1 (Mandiant's PLA Unit 61398 Report)
+- **Key Evidence**:  
+  - Shanghai office physical location  
+  - GH0st RAT malware with Chinese work hours  
+  - 12,000-node C2 map published  
 
-### 🔄 Integration into SOC:
-- IOC ingestion, correlation with log data
-- Detection rule enrichment
-- Alerts and case enrichment
+### B. WannaCry → Lazarus Group
+- **Attribution Proof**:  
+  - Code matches Contopee ransomware  
+  - Bitcoin to North Korean exchanges  
+  - EternalBlue exploit usage  
 
-### 🧬 Use of YARA:
-- Create signatures for malware family detection in memory, files
-- Deployed across EDR, sandboxes, or scanning tools
-
-### 🤖 Automating CTI:
-- SOAR tools (Cortex XSOAR, Phantom)
-- API ingestion (TAXII, RSS)
-- Scripted enrichment, IOC deduplication, threat scoring
-
----
-
-## 6. Practical Scenario-Based Questions
-
-### 🦠 New ransomware investigation:
-- Collect IOCs, TTPs
-- Sandbox behavior
-- Map to MITRE
-- Notify stakeholders + create detection content
-
-### 🎣 New phishing campaign:
-- Extract domains, URLs, sender details
-- Check delivery vector (email headers)
-- Share with IR/SOC
-- Monitor similar artifacts
-
-### 🧨 Zero-day exploit on dark web:
-- Track actor selling it
-- Gather TTPs or code samples
-- Assess targeting
-- Alert security teams
-
-### 🛡 Post-breach hunting:
-- Use known TTPs/IOCs from IR
-- Hunt historical logs
-- Pivot to find lateral movement, persistence
+### C. SolarWinds → APT29
+- **Tracking Methods**:  
+  - Sunburst killswitch domain (avsvmcloud.com)  
+  - Victimology (US govt targets)  
+  - OAuth abuse TTPs  
 
 ---
 
-## 7. CTI & Incident Response (IR)
+## 5. Advanced CTI Tools & Techniques
 
-### 🧩 How CTI supports IR:
-- Accelerates triage and containment
-- Provides threat context and prioritization
-- Informs playbook customization
+### A. Threat Intelligence Platforms
+- **Recorded Future**: Predictive analytics  
+- **Anomali STAXX**: IOC aggregation  
+- **ThreatConnect**: Campaign mapping  
 
-### 🎯 Using IOCs for detection:
-- Feed into SIEM/EDR
-- Write rules for correlation
-- Alert tuning based on IOC scoring
+### B. Malware Analysis
+- **IDA Pro/Ghidra**: Reverse engineering  
+- **YARA Rules**: Pattern detection  
+- **Cuckoo Sandbox**: Behavioral analysis  
 
-### 🔍 Retrospective hunting:
-- Search historical logs with newly discovered IOCs/TTPs
-- Validate past compromise or missed alerts
-
----
-
-## 8. Soft Skills & Team Collaboration
-
-### 📣 Communicating with non-tech stakeholders:
-- Avoid jargon
-- Use business impact language
-- Provide risk scores, trends, and clear actions
-
-### 📰 Staying updated:
-- Threat intel blogs (Kaspersky, Mandiant, Unit42)
-- CTI communities (Curated Intel, ThreatIntel Slack)
-- Reports (MSTIC, DFIR Report, CISA advisories)
-
-### 💡 Real-world impact:
-- Example: Proactively blocked a phishing domain targeting executives, preventing credential theft
+### C. Dark Web Monitoring
+- **Forums**: RaidForums, BreachForums  
+- **Honeypots**: Attacker TTP collection  
 
 ---
 
-Would you like these questions tailored to **entry**, **mid**, or **senior** level, or customized for specific **focus areas** like **malware analysis**, **APT tracking**, or **threat hunting**?
+## 6. Advancing Your CTI Skills
+1. **Analyze real APT reports** (Mandiant, CrowdStrike)  
+2. **Practice malware analysis** (MalwareBazaar samples)  
+3. **Join CTI communities** (MISP, OTX AlienVault)  
+4. **Experiment with OSINT tools** (Shodan, VirusTotal)  
