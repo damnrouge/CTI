@@ -578,5 +578,108 @@ flowchart TD
 ```
 
 
+------------------------------------------------------------------------------------------------------------
+
+# 🛡️ Malware Sample Analysis for Threat Intelligence: Step-by-Step Walkthrough
+
+Analyzing a malware sample provides crucial insights into adversary tactics, techniques, and procedures (TTPs), infrastructure, and potential impacts. Here’s a structured approach to malware analysis focused on extracting actionable threat intelligence.
+
+---
+
+## 1. Preparation & Safety
+
+- **Isolate the sample**: Use a dedicated malware analysis lab (sandbox or isolated VM).
+- **Ensure environment security**: Disable networking or route through controlled monitoring.
+- **Hash and Identify**: Calculate hashes (MD5, SHA256) for tracking and IOC creation.
+
+---
+
+## 2. Static Analysis (Initial Inspection)
+
+- **File type identification**: Use tools like `file`, `PEStudio`, or `ExifTool`.
+- **Metadata extraction**:
+  - File size, timestamps, compiler info.
+  - Embedded strings (`strings` command) to find URLs, IPs, commands.
+- **Check known signatures**:
+  - Query VirusTotal and Hybrid Analysis.
+  - Look for known malware family matches.
+- **Extract embedded resources**:
+  - Icons, certificates, dropped files.
+
+---
+
+## 3. Dynamic Analysis (Behavioral Monitoring)
+
+- **Run in sandbox** (Cuckoo Sandbox, Any.Run, Joe Sandbox):
+  - Observe process creation, network connections, file modifications.
+  - Monitor registry changes, mutex creation, persistence mechanisms.
+- **Capture network traffic**:
+  - Identify C2 servers, beacon intervals, exfiltration behavior.
+- **Process and memory inspection**:
+  - Use debuggers or process monitors (Procmon, Process Hacker).
+- **Behavioral indicators**:
+  - Analyze command-line arguments, lateral movement attempts.
+
+---
+
+## 4. Code & Payload Analysis
+
+- **Disassembly and debugging**:
+  - Use IDA Pro, Ghidra, or Radare2 to reverse engineer code.
+  - Identify encryption, packing, anti-debugging techniques.
+- **API call analysis**:
+  - Map API usage to MITRE ATT&CK techniques (e.g., `CreateRemoteThread` → lateral movement).
+- **Deobfuscation/unpacking**:
+  - Unpack packed or encrypted payloads to analyze the core functionality.
+
+---
+
+## 5. Infrastructure & IOC Extraction
+
+- **Extract Indicators of Compromise (IOCs)**:
+  - Domains, IP addresses, URLs, file hashes.
+  - Registry keys, mutexes, file names.
+- **Identify command and control (C2) infrastructure**:
+  - Use passive DNS, WHOIS, Shodan to profile servers.
+- **Search for related samples or campaigns**:
+  - Cross-reference with MISP, VirusTotal, or vendor reports.
+
+---
+
+## 6. Threat Actor Attribution
+
+- **Match behaviors & IOCs** to known TTPs in MITRE ATT&CK.
+- **Correlate with threat actor profiles** from intelligence reports (Mandiant, CrowdStrike, etc.).
+- **Assess motives and targets** based on payload behavior and infrastructure.
+
+---
+
+## 7. Reporting & Intelligence Dissemination
+
+- **Create detailed analysis report**:
+  - Summary of findings (capabilities, impact, IOCs).
+  - Attribution and confidence levels.
+  - Recommendations for detection and mitigation.
+- **Feed IOCs and TTPs into SOC tools**:
+  - Update SIEM, EDR, threat intelligence platforms.
+- **Collaborate with incident response and threat hunting teams**.
+
+---
+
+## Example Summary Table
+
+| Phase           | Tools/Techniques                        | Outputs                                   |
+|-----------------|---------------------------------------|-------------------------------------------|
+| Preparation     | Isolated VM, Hash tools               | Malware hashes, environment setup         |
+| Static Analysis | PEStudio, Strings, VirusTotal         | File metadata, known signatures, IOCs     |
+| Dynamic Analysis| Sandbox, Procmon, Wireshark           | Behavior logs, network indicators          |
+| Reverse Engineering| IDA Pro, Ghidra, Debuggers           | Malware code, anti-analysis techniques    |
+| IOC Extraction  | Regex, MISP, Passive DNS              | C2 domains/IPs, hashes, registry keys      |
+| Attribution     | MITRE ATT&CK, Vendor Reports          | Threat actor profiles, campaign links     |
+| Reporting       | Markdown/HTML reports, TIP integration| Actionable intel, detection rules          |
+
+---
+
+> Malware analysis is a blend of automated tools and expert investigation to uncover adversary methods and enable proactive defense.
 
 
