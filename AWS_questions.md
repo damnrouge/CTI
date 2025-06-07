@@ -1440,6 +1440,158 @@ Trigger alerts or auto-block actions
 
 > By integrating MISP, ThreatFox, and OTX into AWS threat detection workflows, you transform your cloud into a **proactive and intelligence-driven defense ecosystem**. The key is automation, normalization, and secure orchestration.
 
+---
+
+
+# AWS-Native Methods to Detect and Block Malicious IPs or Domains
+
+---
+
+## 🧭 Objective
+
+Utilize AWS-native tools to **detect**, **analyze**, and **block** malicious IP addresses and domains in real-time for cloud security and threat mitigation.
+
+---
+
+## 🔍 1. AWS GuardDuty
+
+### 🔸 Use Case:
+Detect known malicious IPs/domains and behavioral anomalies.
+
+| Feature                        | Description                                                    |
+|-------------------------------|----------------------------------------------------------------|
+| Threat Intelligence Feeds     | Uses AWS + custom threat lists (from S3)                       |
+| IOC Match Detection           | Identifies malicious activity from threat intel                |
+| Integration                   | Sends findings to Security Hub, EventBridge, CloudWatch        |
+
+**How to Block:**
+- Trigger automated response via **Lambda** on findings (e.g., update NACL, SG, WAF).
+
+---
+
+## 🧱 2. AWS WAF + AWS WAF IP Sets
+
+### 🔸 Use Case:
+Block HTTP(S) requests from known malicious IPs.
+
+| Feature                | Description                                        |
+|------------------------|----------------------------------------------------|
+| IP Set Lists           | List of IPs/CIDRs for allow/block actions         |
+| Rate-Based Rules       | Block IPs exceeding request threshold              |
+| Regex Domain Filtering | Match malicious domains in headers/URIs           |
+
+**How to Update IP Sets:**
+- Use Lambda to fetch IOCs from ThreatFox/OTX → Update WAF IP sets dynamically.
+
+---
+
+## 🌐 3. Amazon Route 53 DNS Firewall
+
+### 🔸 Use Case:
+Block DNS queries to known malicious domains.
+
+| Feature                   | Description                                     |
+|---------------------------|-------------------------------------------------|
+| Managed Domain Lists      | AWS-provided known bad domains                  |
+| Custom Domain Lists       | Import IOCs from feeds (ThreatFox, MISP, etc.)  |
+| Logging                   | Logs blocked DNS queries to CloudWatch          |
+
+**Deployment Scope:**
+- DNS Firewall rules apply at **VPC Resolver level** (outbound DNS traffic).
+
+---
+
+## 📄 4. VPC Network Access Control Lists (NACLs)
+
+### 🔸 Use Case:
+Block traffic at the subnet level based on IP.
+
+| Feature             | Description                          |
+|----------------------|--------------------------------------|
+| Stateless            | Rules apply to inbound/outbound     |
+| IP/CIDR Blocking     | Supports deny rules by IP ranges    |
+
+**Limitations:**
+- No domain-level filtering.
+- Max 20 rules per NACL (can be increased with service request).
+
+---
+
+## 🔒 5. Security Groups (SGs)
+
+### 🔸 Use Case:
+Restrict inbound access to EC2, Lambda, RDS, etc.
+
+| Feature           | Description                                    |
+|--------------------|------------------------------------------------|
+| Stateful           | Return traffic is automatically allowed       |
+| Port/IP Filtering  | Can allow or block specific IPs per port      |
+
+**Blocking via SG:**
+- Remove known bad IPs from allowed list.
+- Not suitable for high-scale dynamic blocking.
+
+---
+
+## 📊 6. Amazon CloudFront + AWS WAF
+
+### 🔸 Use Case:
+Edge-layer protection against IPs and domains.
+
+| Feature               | Description                                  |
+|------------------------|----------------------------------------------|
+| WAF Integration        | Attach WAF to CloudFront distribution        |
+| Geo/IP/Regex rules     | Filter based on patterns                     |
+| IP Set Auto-Update     | Use Lambda to refresh IPs from threat feeds |
+
+---
+
+## 🧠 7. Custom Threat List Automation (IOC → Action)
+
+### Sample Workflow:
+
+```
+External Feed (ThreatFox, MISP, OTX)
+        ↓
+Lambda (scheduled)
+        ↓
+Extract IOCs (IPs/domains)
+        ↓
+Update:
+  → GuardDuty (S3 threat list)
+  → WAF IP Sets
+  → DNS Firewall Lists
+  → Trigger CloudWatch alert on match
+```
+
+---
+
+## 🛡️ 8. AWS Firewall Manager
+
+### 🔸 Use Case:
+Centralized management of WAF, SGs, DNS Firewall rules across multi-account setups.
+
+| Feature                 | Description                                |
+|--------------------------|--------------------------------------------|
+| Multi-account Policy     | Consistent security policies via AWS Org  |
+| Compliance Monitoring    | Ensures required WAF/SG policies exist    |
+
+---
+
+## ✅ Summary
+
+| AWS Service           | Detect | Block IP | Block Domain | Automation Support |
+|------------------------|--------|----------|---------------|---------------------|
+| **GuardDuty**         | ✅     | Indirect | Indirect      | ✅ Lambda           |
+| **WAF**               | ❌     | ✅       | Regex Match   | ✅ Lambda/IP Sets   |
+| **DNS Firewall**      | ❌     | ❌       | ✅             | ✅ Custom Lists     |
+| **NACLs**             | ❌     | ✅       | ❌             | ✅ (Scripted)       |
+| **Security Groups**   | ❌     | ✅       | ❌             | ⚠️ Manual Updates   |
+| **Firewall Manager**  | ❌     | ✅       | ✅             | ✅ Centralized      |
+
+---
+
+> **Key Takeaway:** Use **GuardDuty for detection**, **WAF and DNS Firewall for blocking**, and **Lambda + threat intel feeds** for full automation in AWS-native threat mitigation workflows.
 
 
 
