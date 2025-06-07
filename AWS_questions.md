@@ -1059,4 +1059,128 @@ if finding_type == "UnauthorizedAccess:IAMUser/ConsoleLogin":
     disable_user(iam_user)
     send_alert(iam_user, source_ip)
 
+---
+
+# Forensic Analysis on an EC2 Instance Without Altering Evidence
+
+---
+
+## 🎯 Objective
+
+To perform a **forensically sound investigation** on a potentially compromised EC2 instance while preserving the integrity of original evidence (disk, memory, logs, etc.).
+
+---
+
+## 🧷 Key Principles
+
+- **Do not stop or reboot** the instance (volatile data like memory may be lost).
+- **Avoid logging in interactively** unless necessary (to prevent overwriting system artifacts).
+- **Collect data remotely and passively** when possible.
+- **Snapshot before analysis**, then investigate offline.
+
+---
+
+## 🧰 Step-by-Step Forensic Workflow
+
+---
+
+### 🔒 1. Isolate the EC2 Instance
+
+- **Detach from original Security Group**.
+- Attach to a **Quarantine Security Group**:
+  - Deny all outbound traffic.
+  - Allow only analyst IP for SSH/RDP if required.
+- Remove IAM Role if feasible to prevent further abuse.
+
+---
+
+### 📦 2. Create Forensic Copies
+
+| Evidence Type         | Preservation Technique                         |
+|------------------------|-----------------------------------------------|
+| **Disk (EBS)**         | Use `CreateSnapshot` API or AWS Console       |
+| **Memory (RAM)**       | Capture using memory forensics agent (if EDR or SSM agent is installed) |
+| **Metadata**           | Collect instance metadata, tags, AMI ID, etc. |
+
+> Always tag the snapshot as “forensic-evidence-[date]” and restrict access via IAM.
+
+---
+
+### 🖥️ 3. Analyze Offline (New Forensic Instance)
+
+- Create a **read-only volume** from the snapshot.
+- Attach it to a **forensic EC2 instance** (separate trusted instance).
+- **Mount the volume as read-only**:
+  - Linux: `mount -o ro /dev/xvdf1 /mnt/forensics`
+  - Windows: Use Disk Management to mount as Read-Only
+
+---
+
+### 🔍 4. Examine Artifacts
+
+#### 📁 File System Artifacts:
+| Location               | Forensic Value                                 |
+|------------------------|-------------------------------------------------|
+| `/etc/cron*`, Task Scheduler | Persistence mechanisms                 |
+| `.bash_history` / PowerShell logs | Command execution trail          |
+| `/var/log/`, Event Logs     | System activity, logins, errors          |
+| `/tmp/`, `%TEMP%`          | Malware staging or download locations     |
+| Suspicious binaries/scripts | Look for new/unusual files                |
+
+#### 🧠 Memory Artifacts (if RAM dump is available):
+- Analyze with **Volatility** or **Rekall**.
+- Extract:
+  - Running processes
+  - Open sockets
+  - Injected code
+  - In-memory credentials
+
+#### 🌐 Network Artifacts:
+- Examine VPC Flow Logs:
+  - Lateral movement
+  - C2 callbacks
+- Analyze active connections from memory (if captured).
+
+---
+
+### 🧠 5. Correlate With Threat Intelligence
+
+- Hash suspicious binaries and check with:
+  - VirusTotal
+  - MISP
+  - AbuseIPDB
+- Map TTPs to **MITRE ATT&CK** to understand the actor’s goals.
+
+---
+
+### 📜 6. Maintain a Chain of Custody
+
+- Record:
+  - Snapshot IDs
+  - IAM access used
+  - Timestamps
+  - Tools used for analysis
+- Keep forensic logs for legal and audit purposes.
+
+---
+
+## ✅ Best Practices Summary
+
+| Practice                      | Description                                       |
+|-------------------------------|--------------------------------------------------|
+| **No Changes to Original**    | Use snapshots; never mount original EBS directly |
+| **Controlled Access**         | Use strict IAM and security groups               |
+| **Volatile Data First**       | Capture memory before stopping instance          |
+| **Offline Analysis**          | Use trusted forensic machine                     |
+| **Audit Logging**             | Log every forensic action taken                  |
+
+---
+
+## 🧠 Final Note
+
+> In AWS, forensic readiness means building automation around isolation, snapshotting, and artifact extraction **before** the incident occurs. Use Lambda + SSM to automate trusted evidence collection.
+
+---  
+
+
 
