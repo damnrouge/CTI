@@ -567,3 +567,68 @@ AWS provides a suite of native security and monitoring services designed to dete
 **Key Takeaway:**  
 Leverage AWS-native tools in an integrated manner for comprehensive threat detection and intelligence. Continuous monitoring, automated alerting, and rapid response reduce risk and improve security posture in the AWS cloud environment.
 
+---
+
+# Amazon Inspector: Overview and Role in Vulnerability Management
+
+---
+
+## What is Amazon Inspector?
+
+Amazon Inspector is an automated security assessment service that helps improve the security and compliance of applications deployed on AWS.
+
+- It analyzes AWS workloads for vulnerabilities or deviations from best practices.
+- Supports assessments for Amazon EC2 instances, container images (Amazon ECR), and Lambda functions.
+- Provides detailed findings with prioritized remediation recommendations.
+
+---
+
+## How Amazon Inspector Assists in Vulnerability Management
+
+### 1. Automated Security Assessments  
+- Continuously scans your environment for common vulnerabilities, insecure configurations, and compliance issues.
+- Uses a curated rules package based on industry standards and security benchmarks (e.g., CVEs, CIS benchmarks).
+
+### 2. Integration with AWS Services  
+- Works with AWS Systems Manager for agent deployment and management.  
+- Integrates with AWS Security Hub to centralize findings and improve visibility.
+
+### 3. Prioritization and Reporting  
+- Scores findings based on severity and exploitability.  
+- Provides actionable recommendations to fix issues quickly.
+
+### 4. Supports Multiple Resource Types  
+- Scans EC2 instances for OS and network vulnerabilities.  
+- Analyzes container images for known vulnerabilities before deployment.  
+- Evaluates Lambda functions for security best practices.
+
+### 5. Continuous Monitoring  
+- Enables scheduled or on-demand assessments, helping maintain an up-to-date security posture.
+
+---
+
+## Typical Vulnerabilities Detected
+
+- Operating system vulnerabilities (missing patches, outdated software)  
+- Network configurations exposing instances  
+- Insecure application configurations  
+- Known software vulnerabilities in container images  
+- Lambda function misconfigurations
+
+---
+
+## Summary
+
+| Feature                      | Benefit                              |
+|------------------------------|------------------------------------|
+| Automated vulnerability scans| Reduces manual effort               |
+| Detailed prioritized findings| Enables focused remediation         |
+| Integration with Security Hub| Centralized security management     |
+| Multi-resource coverage      | Comprehensive vulnerability detection|
+
+---
+
+**Key Takeaway:**  
+Amazon Inspector simplifies vulnerability management by automating security assessments across AWS workloads, enabling proactive detection and remediation of vulnerabilities to strengthen your cloud security posture.
+
+
