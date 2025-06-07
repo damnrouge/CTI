@@ -847,5 +847,105 @@ Understanding AWS-specific attack vectors is essential for building a strong clo
 **Key Takeaway:**  
 AWS-specific attack vectors often stem from misconfigurations and over-permissive access. A layered detection and least-privilege enforcement strategy—supported by native tools like CloudTrail, GuardDuty, and Config—is essential for proactive threat mitigation.
 
+---
+
+# Investigating a Suspected Compromised EC2 Instance
+
+---
+
+## Objective:
+To methodically investigate a suspected EC2 compromise, preserve forensic evidence, identify the root cause, and contain further risk.
+
+---
+
+## Step-by-Step Investigation Approach
+
+---
+
+### 🔒 1. Contain the Instance (without termination)
+- **Quarantine:**
+  - Detach the instance from its current Security Group.
+  - Attach it to a restrictive "Quarantine SG" (no inbound/outbound except for analyst IP).
+- **Preserve State:**
+  - Do **not** stop or terminate the instance immediately to avoid losing volatile memory (RAM).
+  - Take a memory dump if EC2 is Linux (using `LiME`) or Windows (using `WinPMEM`).
+- **Snapshot:**
+  - Create EBS volume snapshots (OS + data) for offline forensic analysis.
+  - Preserve the original volumes unaltered.
+
+---
+
+### 📜 2. Collect Evidence
+- **CloudTrail Logs:**
+  - Look for suspicious activity: `RunInstances`, `StartInstances`, `CreateUser`, `AttachRolePolicy`, `ConsoleLogin`.
+- **VPC Flow Logs:**
+  - Review outbound connections to suspicious IPs/domains.
+  - Check for lateral movement (east-west traffic).
+- **GuardDuty Findings:**
+  - Review alerts for known IOCs (e.g., crypto mining, C2 activity, SSH brute force).
+- **System Logs:**
+  - `auth.log`, `secure.log`, `.bash_history`, Windows Event Logs.
+  - Focus on login attempts, privilege escalation, unknown scheduled tasks.
+- **Running Processes & Network Connections:**
+  - List all running processes (`ps`, `tasklist`) and open connections (`netstat`, `ss`).
+
+---
+
+### 🔍 3. Analyze Artifacts
+
+| Artifact                        | What to Look For                                 |
+|--------------------------------|--------------------------------------------------|
+| **Startup Scripts**            | Unauthorized changes in `/etc/rc.local`, `cron`, Windows `Startup` |
+| **IAM Role**                   | Check if instance role was modified or misused   |
+| **New User Accounts**          | Unexpected OS-level or IAM users                 |
+| **Installed Software**         | Presence of backdoors, miners, web shells        |
+| **File System**                | Data exfiltration traces, staging directories    |
+| **Web Logs**                   | Suspicious requests, uploads, encoded strings    |
+| **Persistence Mechanisms**     | Cron jobs, scheduled tasks, new services         |
+
+---
+
+### 🧠 4. Threat Intelligence Correlation
+
+- Use IPs, domains, hashes from logs to match against:
+  - MISP, VirusTotal, AbuseIPDB, ThreatFox
+- Correlate TTPs with MITRE ATT&CK (e.g., `Execution > Command and Scripting Interpreter`).
+
+---
+
+### ✅ 5. Remediation & Recovery
+
+- Revoke instance IAM role credentials (rotate access keys if leaked).
+- Terminate compromised instance **after** evidence is collected.
+- Launch new instance from clean AMI.
+- Apply:
+  - Least privilege IAM
+  - Security group lockdown
+  - EDR/Cloud workload protection (e.g., AWS Inspector, Defender)
+- Patch system and software vulnerabilities.
+
+---
+
+### 🧾 6. Reporting & Documentation
+
+- Document:
+  - Timeline of events
+  - Attack vector
+  - Compromised data/services
+  - Actions taken (containment, eradication, recovery)
+- Report to stakeholders and AWS Security (if needed).
+
+---
+
+## Summary Table
+
+| Phase             | Key Actions                                                |
+|------------------|------------------------------------------------------------|
+| **Contain**       | Isolate instance, snapshot volumes, preserve memory        |
+| **Collect**       | CloudTrail, Flow Logs, GuardDuty, system logs              |
+| **Analyze**       | Inspect logs, processes, files, IAM roles                  |
+| **Correlate**     | Use CTI t
+
+
 
 
