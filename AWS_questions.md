@@ -1017,5 +1017,46 @@ A ransomware actor gains access to an S3 bucket, encrypts stored data, and eithe
 - If versioning is enabled:
   - **Restore Previous**
 
+---
+
+# Using AWS Lambda for Automated Incident Response
+
+---
+
+## 🔄 Introduction
+
+AWS Lambda enables **serverless, event-driven automation**. It is widely used in security operations to execute predefined response actions when a threat is detected—without manual intervention.
+
+---
+
+## 🛠️ Common Use Cases of Lambda in Incident Response
+
+| Use Case                         | Trigger Source             | Automated Action                                                   |
+|----------------------------------|-----------------------------|----------------------------------------------------------------------|
+| **IAM Key Compromise**           | GuardDuty Finding          | Disable access key, notify via SNS/Slack                            |
+| **S3 Bucket Misconfiguration**   | Config Rule / EventBridge  | Auto-remediate permissions, revert to known-good policy             |
+| **EC2 Threat Detection**         | GuardDuty Finding          | Isolate instance by modifying security groups                       |
+| **Suspicious CloudTrail Event**  | CloudTrail + Lambda        | Trigger investigation workflow, log user actions                   |
+| **Unusual Login Attempts**       | CloudWatch Alarm           | Force password reset, notify SOC                                    |
+| **Malicious IP Traffic**         | VPC Flow Logs              | Update NACLs or SGs to block IPs                                    |
+
+---
+
+## ⚙️ Lambda IR Workflow Components
+
+### 1. **Trigger Sources**
+- **Amazon GuardDuty**
+- **AWS Config**
+- **CloudTrail via EventBridge**
+- **Security Hub**
+- **CloudWatch Alarms**
+- **S3 Events (e.g., malicious uploads)**
+
+### 2. **Processing Logic in Lambda**
+Example logic:
+```python
+if finding_type == "UnauthorizedAccess:IAMUser/ConsoleLogin":
+    disable_user(iam_user)
+    send_alert(iam_user, source_ip)
 
 
