@@ -631,4 +631,93 @@ Amazon Inspector is an automated security assessment service that helps improve 
 **Key Takeaway:**  
 Amazon Inspector simplifies vulnerability management by automating security assessments across AWS workloads, enabling proactive detection and remediation of vulnerabilities to strengthen your cloud security posture.
 
+---
+# Using AWS CloudTrail and VPC Flow Logs for Threat Hunting
+
+---
+
+## Introduction
+
+Threat hunting in AWS involves proactively searching for signs of compromise, policy violations, or abnormal behaviors across the cloud environment. Two essential native tools for this are:
+
+- **AWS CloudTrail** — Records API activity and user actions.
+- **VPC Flow Logs** — Captures network traffic metadata.
+
+Together, they provide deep visibility into operational and network behaviors.
+
+---
+
+## 1. AWS CloudTrail for Threat Hunting
+
+### Description:
+CloudTrail logs API calls made through the AWS Management Console, CLI, SDKs, and services.
+
+### What to Hunt:
+
+| Threat Scenario                          | Indicators to Search in CloudTrail                                     |
+|------------------------------------------|------------------------------------------------------------------------|
+| **Unauthorized Access**                  | `ConsoleLogin` failures, unusual `AssumeRole`, new `AccessKey` usage   |
+| **Privilege Escalation**                 | `AttachRolePolicy`, `PutUserPolicy`, `UpdateAssumeRolePolicy`          |
+| **Persistence Mechanism**                | Creation of backdoor IAM users, roles, or policies                     |
+| **Data Exfiltration Attempts**           | `GetObject`, `GetParameter`, `GetSecretValue` from sensitive resources |
+| **Defense Evasion**                      | `StopLogging`, `DeleteTrail`, `DetachPolicy`                          |
+
+### Hunting Tips:
+- Correlate API calls with IAM identities and unusual geolocation.
+- Set up Athena queries to detect known attack chains.
+- Use `eventSource`, `eventName`, `userAgent`, and `sourceIPAddress` fields for context.
+
+---
+
+## 2. VPC Flow Logs for Threat Hunting
+
+### Description:
+VPC Flow Logs record metadata about IP traffic going to and from network interfaces in your VPC.
+
+### What to Hunt:
+
+| Threat Scenario                          | Indicators in Flow Logs                                           |
+|------------------------------------------|-------------------------------------------------------------------|
+| **Command-and-Control Communication**    | Outbound traffic to known malicious IPs/domains                  |
+| **Port Scanning / Reconnaissance**       | High volume of connections to multiple ports (low byte count)     |
+| **Data Exfiltration**                    | Large outbound data transfers to unfamiliar destinations          |
+| **Internal Lateral Movement**            | Unusual east-west traffic between instances                       |
+| **Unexpected Protocol Use**              | Connections on uncommon ports/protocols                           |
+
+### Hunting Tips:
+- Filter on unusual `srcaddr`, `dstaddr`, and port combinations.
+- Monitor for persistent connections over time to external IPs.
+- Join with GuardDuty or CTI feeds for IOC correlation.
+
+---
+
+## Combined Use Case: Suspicious EC2 Activity
+
+### Scenario:
+An EC2 instance starts making outbound connections to a new IP range.
+
+### Threat Hunt Steps:
+1. **CloudTrail:** Check if the EC2 was launched recently or modified.
+   - Look for `RunInstances`, `ModifyInstanceAttribute`, or `StartInstances`.
+2. **Flow Logs:** Analyze outbound traffic from instance's ENI.
+   - Identify if traffic is going to uncommon ports or external IPs.
+3. **Correlation:** 
+   - Compare destination IPs with threat intelligence (via GuardDuty or MISP).
+   - Cross-reference timeframes between API activity and network anomalies.
+
+---
+
+## Summary Table
+
+| Log Type         | Hunting Focus                        | Tooling Support                   |
+|------------------|--------------------------------------|----------------------------------|
+| **CloudTrail**   | User activity, API calls, IAM abuse  | Athena, CloudWatch, Security Hub |
+| **VPC Flow Logs**| Network anomalies, exfiltration, C2  | Athena, GuardDuty, Macie         |
+
+---
+
+**Key Takeaway:**  
+CloudTrail and VPC Flow Logs are foundational to AWS threat hunting. CloudTrail offers visibility into user and service activities, while Flow Logs reveal behavioral patterns in network traffic. Used together, they enable detection of subtle indicators of compromise across both control and data planes.
+
+
 
