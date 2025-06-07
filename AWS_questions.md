@@ -313,3 +313,63 @@ Detect overly permissive policies and unintended external access.
 
 **Key Takeaway:**  
 IAM is critical for AWS security. Misconfigurations or weak controls expose your environment to unauthorized access and compromise. Enforce strong IAM controls aligned with threat intelligence insights to maintain a secure cloud infrastructure.
+
+---
+
+# AWS GuardDuty: Threat Detection Overview
+
+---
+
+## What is AWS GuardDuty?
+
+AWS GuardDuty is a continuous threat detection service that monitors malicious or unauthorized behavior to help protect your AWS accounts, workloads, and data stored in AWS.
+
+It analyzes data from multiple sources such as:
+
+- **AWS CloudTrail event logs** (API calls)
+- **VPC Flow Logs** (network traffic)
+- **DNS logs**
+
+GuardDuty uses machine learning, anomaly detection, and integrated threat intelligence feeds to identify potential security threats.
+
+---
+
+## How GuardDuty Helps in Threat Detection
+
+- **Continuous Monitoring:** Automatically and continuously scans AWS account activity and network traffic for suspicious behavior.
+- **Threat Intelligence Integration:** Combines AWS threat intelligence and third-party feeds to detect known malicious IPs, domains, and other indicators.
+- **Anomaly Detection:** Detects unusual API calls, unauthorized deployments, or reconnaissance activities through ML-based behavioral analysis.
+- **Actionable Alerts:** Generates detailed findings with severity levels and recommended remediation steps.
+- **Integration:** Works with AWS Security Hub, CloudWatch Events, and Lambda for automated response.
+
+---
+
+## Types of Threats GuardDuty Can Identify
+
+| Threat Category             | Examples of Specific Threats                                  |
+|----------------------------|--------------------------------------------------------------|
+| **Unauthorized Access**    | Use of compromised credentials, unusual API calls, console login anomalies |
+| **Reconnaissance**         | Port scanning, unusual DNS requests, reconnaissance of network resources |
+| **Instance Compromise**    | Communication with known malicious IPs, cryptocurrency mining activity, unusual network traffic patterns |
+| **Privilege Escalation**   | Attempts to escalate permissions or assume unauthorized roles |
+| **Data Exfiltration**      | Suspicious data transfer patterns or access to sensitive data |
+| **Account Takeover**       | Changes to security groups, creation of suspicious users or keys |
+| **Malware & Botnets**      | Instances communicating with known command-and-control servers |
+
+---
+
+## Summary
+
+| GuardDuty Feature           | Benefit                                       |
+|----------------------------|-----------------------------------------------|
+| Continuous, automated detection | Real-time threat awareness                    |
+| Integration with AWS logs   | Comprehensive visibility into user and network activity |
+| ML and anomaly detection   | Identifies novel and evolving threats          |
+| Threat intelligence feeds  | Detects known malicious actors and IPs         |
+| Actionable alerts          | Enables fast, informed incident response       |
+
+---
+
+**Key Takeaway:**  
+AWS GuardDuty strengthens your security posture by proactively identifying suspicious activities and potential threats across your AWS environment, enabling rapid detection and response before damage occurs.
+
