@@ -1114,7 +1114,9 @@ To perform a **forensically sound investigation** on a potentially compromised E
   - Linux: `mount -o ro /dev/xvdf1 /mnt/forensics`
   - Windows: Use Disk Management to mount as Read-Only
 
----
+```
+
+------------
 
 ### 🔍 4. Examine Artifacts
 
@@ -1181,6 +1183,8 @@ To perform a **forensically sound investigation** on a potentially compromised E
 > In AWS, forensic readiness means building automation around isolation, snapshotting, and artifact extraction **before** the incident occurs. Use Lambda + SSM to automate trusted evidence collection.
 
 ---  
+
+
 
 
 
