@@ -203,3 +203,113 @@ Neglecting customer-side responsibilities leads to common attack vectors like:
 - Misconfigured security groups
 
 ---
+
+# AWS Identity and Access Management (IAM): Overview and Security Best Practices
+
+---
+
+## What is AWS IAM?
+
+AWS Identity and Access Management (IAM) is a service that enables you to securely control access to AWS resources.
+
+- **Users:** Individual identities with long-term credentials.  
+- **Groups:** Collections of users with shared permissions.  
+- **Roles:** Temporary credentials assigned to services or users.  
+- **Policies:** JSON documents defining permissions (Allow or Deny).
+
+---
+
+## IAM Security Threats (Relevant MITRE ATT&CK Techniques)
+
+| Technique ID | Description                             |
+|--------------|---------------------------------------|
+| T1078        | Use of valid accounts (stolen creds)  |
+| T1550        | Use of alternate authentication methods (access keys, tokens) |
+| T1087        | Account enumeration                    |
+| T1606        | Forging web credentials               |
+
+---
+
+## IAM Security Best Practices
+
+### 1. Principle of Least Privilege  
+Grant only the minimal required permissions and restrict to necessary resources.
+
+Example policy snippet:
+
+{
+"Effect": "Allow",
+"Action": "s3:GetObject",
+"Resource": "arn:aws:s3:::my-bucket/*"
+}
+
+
+---
+
+### 2. Use IAM Roles Instead of IAM Users for Applications  
+Assign roles to AWS services (EC2, Lambda, ECS) to avoid embedding static credentials.
+
+---
+
+### 3. Enforce Multi-Factor Authentication (MFA)  
+Require MFA for root account, privileged users, and federated identities.
+
+---
+
+### 4. Monitor and Rotate Credentials  
+- Regularly audit and disable unused access keys.  
+- Rotate keys periodically.  
+- Use AWS CloudTrail, GuardDuty, and Access Analyzer for monitoring.
+
+---
+
+### 5. Use Permission Boundaries and Service Control Policies (SCPs)  
+- Permission Boundaries limit max permissions on IAM entities.  
+- SCPs enforce organization-wide permission guardrails.
+
+---
+
+### 6. Audit and Alert on IAM Events  
+Monitor critical events like `CreateUser`, `AttachPolicy`, `AssumeRole`, and `ConsoleLogin` using CloudTrail and AWS Config.
+
+---
+
+### 7. Avoid Using Root Account for Daily Tasks  
+- Use root only for initial setup and emergencies.  
+- Secure root credentials with strong password and MFA.
+
+---
+
+### 8. Use IAM Access Analyzer  
+Detect overly permissive policies and unintended external access.
+
+---
+
+## Real-World Example
+
+**Incident:** An AWS access key leaked on a public repo allowed an attacker to assume roles with permissions like `iam:PassRole` and `s3:GetObject`.
+
+**Mitigation:**  
+- Immediate key revocation and rotation.  
+- Use CloudTrail logs for incident analysis.  
+- Restrict role permissions and implement strict trust policies.  
+- Avoid hardcoding credentials; use Secrets Manager or Parameter Store.
+
+---
+
+## Summary
+
+| Practice                   | Purpose                                |
+|----------------------------|---------------------------------------|
+| Least Privilege            | Minimize attack surface                |
+| IAM Roles                  | Avoid static credentials               |
+| MFA                        | Protect against compromised passwords |
+| Credential Rotation        | Limit exposure time                    |
+| Monitoring & Logging       | Detect and respond to suspicious activity |
+| Access Analyzer            | Identify misconfigurations             |
+| Avoid Root Usage           | Minimize high-risk access              |
+
+---
+
+**Key Takeaway:**  
+IAM is critical for AWS security. Misconfigurations or weak controls expose your environment to unauthorized access and compromise. Enforce strong IAM controls aligned with threat intelligence insights to maintain a secure cloud infrastructure.
