@@ -719,5 +719,133 @@ An EC2 instance starts making outbound connections to a new IP range.
 **Key Takeaway:**  
 CloudTrail and VPC Flow Logs are foundational to AWS threat hunting. CloudTrail offers visibility into user and service activities, while Flow Logs reveal behavioral patterns in network traffic. Used together, they enable detection of subtle indicators of compromise across both control and data planes.
 
+---
+# Common AWS-Specific Attack Vectors
+
+---
+
+Understanding AWS-specific attack vectors is essential for building a strong cloud security posture. Below is a categorized breakdown of frequent attack scenarios that leverage misconfigurations, over-privileged identities, and service abuse.
+
+---
+
+## 1. **S3 Bucket Misconfigurations**
+
+### Attack Vectors:
+- **Public Buckets:** Buckets with `READ`, `WRITE`, or `LIST` access to `Everyone` or `AuthenticatedUsers`.
+- **Unencrypted Data:** Absence of SSE-S3, SSE-KMS, or client-side encryption.
+- **Open Bucket Policies:** Weak or overly permissive bucket policies.
+
+### Threat Impact:
+- Data leakage, theft of PII/IP, public exposure of logs or credentials.
+
+### Detection:
+- Amazon Macie, AWS Config Rules, S3 Access Analyzer.
+
+---
+
+## 2. **IAM Misconfigurations and Privilege Escalation**
+
+### Attack Vectors:
+- **Overly Permissive Policies:** Use of wildcards like `Action: "*"` or `Resource: "*"`.
+- **Privilege Escalation via Policy Modification:** Attacker uses `iam:AttachUserPolicy` or `iam:PutRolePolicy` to grant elevated access.
+- **Use of Temporary Credentials:** Compromised `AssumeRole` or session tokens.
+
+### Privilege Escalation Examples:
+- `PassRole` → Attach elevated role to Lambda or EC2.
+- Create new admin user → `iam:CreateUser` + `iam:AttachUserPolicy`.
+- Escalate via Lambda → Use `lambda:UpdateFunctionCode` to execute code as elevated principal.
+
+### Detection:
+- CloudTrail (for policy changes, `AssumeRole`, or `AttachPolicy` calls), IAM Access Analyzer.
+
+---
+
+## 3. **EC2 Instance Compromise**
+
+### Attack Vectors:
+- **Metadata Service Exploitation (pre-IMDSv2):** SSRF to steal IAM role credentials.
+- **Public IP Exposure:** SSH/RDP open to the internet.
+- **User Data Abuse:** Injection of malicious scripts via instance user data.
+
+### Threat Impact:
+- Credential theft, lateral movement, malware deployment.
+
+### Detection:
+- VPC Flow Logs, GuardDuty (SSH brute force, EC2 exfiltration), Systems Manager inventory.
+
+---
+
+## 4. **Lambda and API Gateway Exploits**
+
+### Attack Vectors:
+- **Excessive IAM Permissions:** Lambda functions with wide IAM access can be hijacked.
+- **API Gateway Abuse:** Improper throttling or auth misconfiguration leads to DoS or injection.
+
+### Detection:
+- CloudTrail, API Gateway access logs, GuardDuty (malicious Lambda behaviors).
+
+---
+
+## 5. **ECS/EKS Misconfigurations**
+
+### Attack Vectors:
+- **Access to Instance Metadata from Containers:** IAM credentials leakage from within containers.
+- **Over-privileged Task Roles/Service Accounts:** Privilege escalation via ECS task roles or EKS IAM roles.
+
+### Detection:
+- GuardDuty (for container compromise), Config rules, logging IAM actions from containers.
+
+---
+
+## 6. **CloudFormation and Infrastructure Abuse**
+
+### Attack Vectors:
+- **Stack Abuse:** Inject malicious templates to create backdoors or extract data.
+- **Drift from Secure Baseline:** Overwrite resources to introduce persistence.
+
+### Detection:
+- CloudTrail, AWS Config (template drift), IAM role monitoring.
+
+---
+
+## 7. **Abuse of CloudTrail and Logging Services**
+
+### Attack Vectors:
+- **Disable/Delete Trails:** Evade detection by stopping CloudTrail or deleting logs.
+- **Tampering with Logging Destinations:** Redirect logs to attacker-controlled storage.
+
+### Detection:
+- CloudTrail (look for `StopLogging`, `DeleteTrail`, `PutBucketPolicy` on log buckets), Security Hub.
+
+---
+
+## 8. **Exploitation via Serverless Misconfigurations**
+
+### Attack Vectors:
+- **Hardcoded Secrets:** Exposing credentials in Lambda environment variables or code.
+- **Open Event Triggers:** Public API triggers allowing unvalidated event sources.
+
+### Detection:
+- Macie (for secrets in code), Config, manual code review, Lambda logs.
+
+---
+
+## Summary Table
+
+| Category                     | Example Attack Vectors                        | Detection Tools                        |
+|-----------------------------|-----------------------------------------------|----------------------------------------|
+| S3 Misconfiguration          | Public buckets, weak policies                 | Macie, S3 Access Analyzer, Config      |
+| IAM Issues                   | Wildcard permissions, privilege escalation    | CloudTrail, IAM Access Analyzer        |
+| EC2 Compromise               | Metadata abuse, public SSH                    | GuardDuty, Flow Logs, Systems Manager  |
+| Serverless Abuse             | Lambda over-privilege, API abuse              | CloudTrail, Security Hub, Macie        |
+| Container Exploits           | Metadata access, IAM misuse                   | GuardDuty, Config, CloudTrail          |
+| CloudFormation Abuse         | Malicious stacks, policy drift                | Config, CloudTrail                     |
+| Logging Evasion              | Disabling trails, redirecting logs            | CloudTrail, Config                     |
+
+---
+
+**Key Takeaway:**  
+AWS-specific attack vectors often stem from misconfigurations and over-permissive access. A layered detection and least-privilege enforcement strategy—supported by native tools like CloudTrail, GuardDuty, and Config—is essential for proactive threat mitigation.
+
 
 
