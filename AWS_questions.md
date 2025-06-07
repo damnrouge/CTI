@@ -442,4 +442,128 @@ AWS Security Hub is a centralized security and compliance service that aggregate
 **Key Takeaway:**  
 AWS Security Hub acts as the security command center for AWS environments by integrating multiple security services and tools into a centralized platform, enhancing detection, compliance, and response capabilities.
 
+---
+# Threat Detection & Intelligence in AWS
+
+---
+
+## Monitoring and Detecting Malicious Activity Using AWS-Native Tools
+
+AWS provides a suite of native security and monitoring services designed to detect, analyze, and respond to malicious activities in your cloud environment. Here’s a structured approach using these tools:
+
+---
+
+## 1. AWS CloudTrail
+
+- **Purpose:** Records all API calls and user activity within your AWS account.
+- **Use Case:**  
+  - Detect unauthorized or suspicious API calls (e.g., `CreateUser`, `DeleteRole`, `ConsoleLogin` failures).  
+  - Track changes in permissions and resource configurations.
+- **How to Use:**  
+  - Enable CloudTrail across all regions.  
+  - Integrate with Amazon CloudWatch Logs for real-time monitoring and alerting.
+
+---
+
+## 2. Amazon GuardDuty
+
+- **Purpose:** Continuous threat detection service analyzing CloudTrail logs, VPC Flow Logs, and DNS logs.
+- **Use Case:**  
+  - Detect compromised instances communicating with known malicious IPs.  
+  - Identify suspicious API calls and reconnaissance activities.  
+  - Alert on privilege escalation attempts and unusual network traffic.
+- **How to Use:**  
+  - Enable GuardDuty in all AWS accounts and regions.  
+  - Review findings in GuardDuty console or forward to AWS Security Hub.
+
+---
+
+## 3. AWS Security Hub
+
+- **Purpose:** Centralized aggregation and prioritization of security findings from multiple AWS services.
+- **Use Case:**  
+  - Correlate GuardDuty alerts with findings from Amazon Macie, AWS Inspector, and Config.  
+  - Monitor compliance against standards like CIS AWS Foundations.
+- **How to Use:**  
+  - Enable Security Hub and integrate with GuardDuty, Macie, Inspector.  
+  - Use dashboards and automated actions for incident response.
+
+---
+
+## 4. Amazon Macie
+
+- **Purpose:** Data security service that uses machine learning to discover and protect sensitive data stored in S3.
+- **Use Case:**  
+  - Detect inadvertent exposure of personally identifiable information (PII) or credentials.  
+  - Alert on unusual access patterns to sensitive data.
+- **How to Use:**  
+  - Enable Macie on S3 buckets storing sensitive data.  
+  - Review findings regularly for suspicious activity.
+
+---
+
+## 5. AWS Config
+
+- **Purpose:** Continuous monitoring and recording of AWS resource configurations.
+- **Use Case:**  
+  - Detect drift from secure baseline configurations.  
+  - Identify unauthorized resource changes or policy violations.
+- **How to Use:**  
+  - Enable AWS Config rules to enforce best practices.  
+  - Configure alerts for non-compliance.
+
+---
+
+## 6. VPC Flow Logs
+
+- **Purpose:** Capture detailed network traffic information within your VPC.
+- **Use Case:**  
+  - Monitor for unusual inbound/outbound traffic patterns.  
+  - Identify data exfiltration or communication with malicious IPs.
+- **How to Use:**  
+  - Enable flow logs for critical VPCs or subnets.  
+  - Analyze logs with Amazon Athena or send to GuardDuty.
+
+---
+
+## 7. Amazon CloudWatch
+
+- **Purpose:** Centralized monitoring and alerting platform.
+- **Use Case:**  
+  - Create metrics and alarms for suspicious patterns (e.g., high failed login attempts).  
+  - Trigger automated responses using AWS Lambda.
+- **How to Use:**  
+  - Set custom dashboards and alerts based on CloudTrail and other logs.
+
+---
+
+## 8. AWS Lambda for Automated Response
+
+- **Purpose:** Serverless compute for automated remediation.
+- **Use Case:**  
+  - Automatically isolate compromised instances.  
+  - Revoke suspicious IAM credentials.  
+  - Notify security teams.
+- **How to Use:**  
+  - Trigger Lambda functions from CloudWatch Events or Security Hub findings.
+
+---
+
+## Summary Table
+
+| AWS Tool           | Detection Focus                     | Use Case Example                     |
+|--------------------|-----------------------------------|------------------------------------|
+| CloudTrail         | API activity & user behavior       | Detect unauthorized API calls      |
+| GuardDuty          | Threat detection & anomaly         | Identify compromised instances     |
+| Security Hub       | Aggregation & compliance           | Centralized alert management       |
+| Macie              | Sensitive data exposure            | Detect PII leaks                   |
+| Config             | Configuration compliance           | Monitor resource drift             |
+| VPC Flow Logs      | Network traffic                    | Detect unusual inbound/outbound    |
+| CloudWatch         | Monitoring & alerting              | Trigger alarms on suspicious activity |
+| Lambda             | Automated response                 | Auto-isolate compromised resources |
+
+---
+
+**Key Takeaway:**  
+Leverage AWS-native tools in an integrated manner for comprehensive threat detection and intelligence. Continuous monitoring, automated alerting, and rapid response reduce risk and improve security posture in the AWS cloud environment.
 
