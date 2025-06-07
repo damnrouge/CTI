@@ -946,6 +946,76 @@ To methodically investigate a suspected EC2 compromise, preserve forensic eviden
 | **Analyze**       | Inspect logs, processes, files, IAM roles                  |
 | **Correlate**     | Use CTI t
 
+---
+# Incident Response Steps: Ransomware Attack on an S3 Bucket (AWS)
+
+---
+
+## 🧨 Scenario Overview
+
+A ransomware actor gains access to an S3 bucket, encrypts stored data, and either deletes originals or replaces files with ransom notes. This scenario demands immediate containment, forensic analysis, and recovery.
+
+---
+
+## 🔐 1. **Containment**
+
+### a. **Revoke Unauthorized Access**
+- Review and remove unauthorized IAM users/roles.
+- Revoke temporary credentials (`AssumeRole`, session tokens).
+- Disable affected IAM entities.
+  
+### b. **Restrict S3 Bucket Access**
+- Immediately update the bucket policy:
+  - Remove public access.
+  - Deny all except specific analyst/admin roles.
+- Enable **S3 Block Public Access** at the account and bucket level.
+
+### c. **Isolate the Affected Account**
+- If possible, suspend inter-service or cross-account access via SCP (Service Control Policies).
+
+---
+
+## 🧾 2. **Evidence Collection**
+
+### a. **CloudTrail**
+- Audit events like:
+  - `PutObject`, `DeleteObject`, `PutBucketPolicy`, `ListObjects`.
+- Look for the following:
+  - Unusual IP addresses
+  - Rare user agents or access patterns
+  - Changes to versioning or lifecycle rules
+
+### b. **S3 Access Logs**
+- Enable if not already (logs future access).
+- Use existing logs to correlate access activity.
+
+### c. **VPC Flow Logs**
+- Check for data exfiltration (e.g., large egress to unknown IPs).
+
+### d. **GuardDuty Findings**
+- Look for alerts:
+  - Unusual S3 API calls
+  - Data access from unusual geo-locations
+  - Credential misuse or privilege escalation
+
+---
+
+## 💥 3. **Damage Assessment**
+
+| Area                    | What to Assess                                  |
+|-------------------------|-------------------------------------------------|
+| **Scope of Encryption** | Which objects were encrypted or deleted         |
+| **Backups**             | Availability of non-corrupted versions/backups  |
+| **Permissions Impacted**| Check if bucket ACLs/policies were modified     |
+| **Affected Users**      | Any legitimate users/services impacted          |
+
+---
+
+## 🛠 4. **Remediation & Recovery**
+
+### a. **Data Recovery**
+- If versioning is enabled:
+  - **Restore Previous**
 
 
 
