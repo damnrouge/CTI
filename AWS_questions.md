@@ -1594,5 +1594,179 @@ Centralized management of WAF, SGs, DNS Firewall rules across multi-account setu
 > **Key Takeaway:** Use **GuardDuty for detection**, **WAF and DNS Firewall for blocking**, and **Lambda + threat intel feeds** for full automation in AWS-native threat mitigation workflows.
 
 
+---
+
+
+# Detailed Incident Response Guide: Exposed AWS API Key
+
+---
+
+## 🎯 Scenario
+
+An attacker has gained unauthorized access to an AWS account using a leaked or exposed **access key ID and secret access key**. This falls under MITRE ATT&CK tactic **T1078 (Valid Accounts)** and represents a critical security incident.
+
+---
+
+## 🛑 1. Initial Detection
+
+### ✅ A. Indicators of Compromise
+
+| Indicator                               | Description                                                  |
+|----------------------------------------|--------------------------------------------------------------|
+| Anomalous API activity                 | Unusual API calls from unfamiliar IPs or regions             |
+| Rapid access pattern                   | Burst of `List`, `Describe`, or `Get` operations             |
+| IAM modification attempts              | Creation or modification of users/roles/policies             |
+| Data movement                          | `GetObject`, `CopyObject`, or `PutObject` on sensitive S3    |
+| Unauthorized service interaction       | New services accessed unexpectedly (e.g., EC2, RDS, Lambda)  |
+
+### ✅ B. Detection Tools and Logs
+
+- **CloudTrail**
+  - Look for `CreateAccessKey`, `AssumeRole`, `ListUsers`, `PutUserPolicy`, `CreateUser`
+- **GuardDuty**
+  - Detects anomalies such as:
+    - `UnauthorizedAccess:IAMUser/ConsoleLogin`
+    - `Recon:IAMUser/NetworkPermissions`
+    - `CredentialAccess` activity
+- **AWS Config**
+  - Review configuration changes for IAM, S3, VPC, etc.
+- **Security Hub**
+  - Aggregates alerts from GuardDuty and Config
+- **VPC Flow Logs**
+  - Detect outbound traffic to known malicious IPs
+
+---
+
+## 🔐 2. Immediate Containment
+
+### Step-by-Step:
+
+1. **Identify the Compromised IAM User**
+   - Use `iam get-access-key-last-used` to verify which key was abused.
+
+2. **Revoke API Access**
+   - Deactivate or delete the compromised access key:
+     ```bash
+     aws iam update-access-key --access-key-id <key> --status Inactive --user-name <user>
+     ```
+
+3. **Block Further Abuse**
+   - Detach IAM roles and remove policies.
+   - Detach user from groups, especially with `AdministratorAccess`.
+
+4. **Rotate Credentials Globally**
+   - Immediately rotate all long-term IAM user credentials.
+   - Investigate and rotate any exposed keys embedded in applications.
+
+5. **Isolate Affected Resources**
+   - Isolate EC2 instances if compromise is suspected.
+   - Lock down S3 buckets temporarily.
+
+---
+
+## 📁 3. Evidence Collection
+
+### Preserve:
+
+| Evidence Type       | Method                                                  |
+|----------------------|---------------------------------------------------------|
+| **CloudTrail Logs** | Export to S3 for long-term storage and analysis         |
+| **IAM Credential Report** | Download full credential usage history           |
+| **GuardDuty Findings** | Export or sync to Security Hub                       |
+| **VPC Flow Logs**   | Analyze outbound IP connections                         |
+| **Snapshot Resources** | Take EBS snapshots of potentially affected EC2        |
+
+Use Amazon Athena or a SIEM to run queries against CloudTrail logs.
+
+---
+
+## 🧠 4. Root Cause Analysis
+
+### Investigate How the Key Was Exposed:
+
+- **Check Public Repositories**
+  - Use `truffleHog`, `Gitleaks`, or GitHub secret scanning.
+- **Inspect Application Code**
+  - Look for embedded keys in Lambda, ECS, EC2, or S3.
+- **Audit Access Logs**
+  - Who last created or used the key? From where?
+- **SSM Inventory**
+  - Review parameters and scripts stored in plain text.
+
+---
+
+## 🛠️ 5. Eradication and Remediation
+
+### Actions:
+
+- Delete the compromised IAM user (if non-essential).
+- Redesign IAM roles with **least privilege**.
+- Enforce **MFA for all IAM users**.
+- Transition to **temporary credentials via STS and roles**.
+- Set up **automated key rotation** policies.
+
+---
+
+## 🧪 6. Detection Engineering (Prevent Recurrence)
+
+### Example Detection Queries
+
+**Athena - High-privilege Actions:**
+```sql
+SELECT eventTime, userIdentity.arn, eventName, sourceIPAddress
+FROM cloudtrail_logs
+WHERE eventSource = 'iam.amazonaws.com'
+AND eventName IN ('CreateUser', 'AttachUserPolicy', 'CreateAccessKey')
+```
+
+**Athena - New AWS Regions Accessed:**
+```sql
+SELECT eventTime, userIdentity.arn, awsRegion, sourceIPAddress
+FROM cloudtrail_logs
+WHERE awsRegion NOT IN ('us-east-1', 'us-west-2')  -- customize as per usage
+```
+
+---
+
+## 🔁 7. Communication and Reporting
+
+| Stakeholder          | Responsibility                                    |
+|-----------------------|--------------------------------------------------|
+| **Security Team**    | Coordinate detection, response, and forensics     |
+| **AWS Support**      | Assist with log analysis, containment             |
+| **Compliance/GRC**   | Determine if regulatory disclosure is required    |
+| **DevOps/Owners**    | Replace keys, patch source                         |
+
+---
+
+## 🧰 8. Long-Term Mitigation Measures
+
+| Control Area           | Action                                             |
+|-------------------------|----------------------------------------------------|
+| **Secrets Management** | Use **AWS Secrets Manager** or **SSM Parameter Store** |
+| **IAM Policy Hygiene** | Audit and remove `*:*` permissions                 |
+| **Environment Hardening** | Enable `MFA`, enforce `IAM Access Analyzer`     |
+| **Logging & Monitoring** | Ensure full CloudTrail coverage across all regions |
+| **CI/CD Security**     | Scan Git, container images, IaC for secrets        |
+
+---
+
+## ✅ Summary
+
+| Phase         | Action Highlights                                          |
+|---------------|------------------------------------------------------------|
+| **Detect**    | CloudTrail, GuardDuty, VPC Logs, Athena                    |
+| **Contain**   | Disable key, revoke permissions, rotate all credentials   |
+| **Collect**   | Logs, snapshots, credential reports                       |
+| **Analyze**   | Identify root cause, attack path, exposed resources       |
+| **Recover**   | Patch IAM model, rebuild secure infrastructure            |
+| **Prevent**   | Enforce IAM best practices, secret management, logging    |
+
+---
+
+**Key Takeaway:**  
+Exposed AWS API keys are among the most exploited cloud vulnerabilities. Fast containment, deep log analysis, and IAM hygiene are critical to preventing privilege abuse and data exfiltration.
+
+> **Proactive defense starts with zero-trust IAM and monitored secrets.**
 
 
